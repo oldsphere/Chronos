@@ -1,6 +1,5 @@
 # Chronos
-
-<p>Application to manage the time spend in different tasks.</p>
+Application to manage the time spent in different tasks.
 
 <ul>
 <li>TimeNotebook - Record the time spent in each activity</li>
