@@ -1,0 +1,34 @@
+# vie 13/01/2017  10:08:26
+
+Categories:
+
+    Deporte
+    Desarollo
+    Desarrollo
+    Domotics
+    Investigate
+    Leissure
+    Leisure
+    Maintaining
+    Maintancene
+    Optimization
+    Organización
+    Productivity
+    Social
+    Tareas
+    Trabajo
+    Trabajo Externo
+
+Necesitaría saber cuantas veces ha aparecido y cuanto tiempo se ha empleado en
+cada una de estas categorias.
+Para eso hay que habilitar nuevas funciones de chronos
+También me tengo que aclarar si quiero poner estas notas en inglés o en
+español...
+
+Una de las ideas que tengo es incluir el autocompletar para las categorías,
+aunque tendría que mirar como hacer esto en bash.
+También podría estar bien con las tareas.
+
+Poner un historial de comandos favoritos sería interesante... aunque ahora creo
+que lo más importante es visualizar los datos.
+

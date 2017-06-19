@@ -1,0 +1,136 @@
+#!/usr/bin/python3
+
+from Chronos.TimeNotebook import TimeNotebook
+from Chronos.Timer import Timer
+from Chronos.Timeout import Timeout
+from Chronos.DynamicLine import TimeLine
+from auxiliar import set_title , date_parser, Alarm, printHelp
+from auxiliar import ALARM_PATH
+from datetime import datetime
+import argparse
+import os,sys
+
+def show_resume(notebook,str_span):
+    span = date_parser(str_span)
+    print(notebook.get_resume(init=span[0],end=span[1]))
+
+if __name__ == '__main__':
+    # Menu definition
+    parser = argparse.ArgumentParser(description="Register the time spent in different tasks")
+    parser.add_argument("-N","--notebook",action="store",default="$HOME/.myNotebook",
+        help="Choose a notebook to register the tasks")
+    parser.add_argument("-T","--timeout",action="store",
+        help="Set a countdown timer with the specified time")
+    parser.add_argument("-l","--label",action="store",default='Unnamed task',
+        help="Choose a label for the task")
+    parser.add_argument("-s","--show",action="store",default=None,const='W',nargs='?',
+        help="Show the tasks stored in the time notebook")
+    parser.add_argument("-r","--resume",action="store",nargs='?',default=None,const='W',
+        help ="Show the resume of the last span")
+    parser.add_argument("-C","--category",action="store",default="",
+        help="Set the category of the task")
+    parser.add_argument("-H","--hide",action="store_true",default=False,
+        help="Do not record current task on the timeNotebook")
+
+    args = parser.parse_args()
+
+    # Load the notebook
+    ntPath = args.notebook
+    ntPath = os.path.expandvars(ntPath)
+    if not os.path.exists(ntPath):
+        completePath = os.path.join( *ntPath.split(os.path.sep)[:-1] )  
+        os.makedirs(completePath, exist_ok=True )
+    nt = TimeNotebook(ntPath)
+    nt.readFile()
+    
+    if args.resume:
+        show_resume(nt, args.resume)
+        sys.exit(1)
+
+    if args.show:
+        print("This feature has not yet been integrated")
+        sys.exit()
+
+    # Change the windows title
+    set_title('chronos - {0}'.format(args.label))
+
+    # Runs the timer
+    if args.timeout:
+        timer = Timeout(args.timeout)
+        header = '{0: <35}{1: <20}'.format('Task:','Remaining time:')
+    else:
+        timer = Timer()
+        header = '{0: <35}{1: <20}'.format('Task:','Elapsed time:')
+    
+    line = TimeLine(refreshTime=0.5)
+    print(header)
+    recordTime = True
+    alarm = Alarm(ALARM_PATH)
+    timer.start()
+    while recordTime:
+        try:
+            time = timer.check(limit_zero=False)
+            msg = '{0: <35}{1: <20}'.format(args.label,time)
+            line.updateLabel(msg) 
+
+            if '-' in time:
+                alarm.start()
+
+        except KeyboardInterrupt:
+            alarm.stop()
+            timer.stop()
+            strnow = datetime.strftime(datetime.now(),'%d/%m/%Y - %H:%M:%S')
+            print('\n\n{0} - Time recording interrupted.'.format(strnow))
+            cmd = input('What do you want to do?\n>').lower()
+            
+            while True:
+                if cmd in ('s','silence'):
+                    alarm.disable()
+                    print(header)
+                    timer.start()
+                    break
+
+                elif cmd in ('r','resume'):
+                    timer.start()
+                    print(header)
+                    break
+
+                elif cmd.startswith('a'):
+                    if type(timer) == Timer:
+                        timer.start()
+                        print(header)
+                        break
+                    elif type(timer) == Timeout:
+                        timestr = ''.join(cmd.split(' ')[1:])
+                        timer.extend(timestr)
+                        timer.status = 'extended'
+                        timer.start()
+                        print(header)
+                        break
+                    else:
+                        raise AttributeError('Invalid timer type')
+
+                elif cmd in ('q','quit','exit'):
+                    recordTime = False
+                    break
+
+                elif cmd in ('o','omit'):
+                    args.hide = True
+                    recordTime = False
+                    break
+
+                elif cmd in ('?','help','h'):
+                    printHelp()
+
+                else:
+                    print('"{0}" is an invalid command'.format(cmd))
+                    printHelp()
+                
+                cmd = input(">")
+    # Record the data
+    if not args.hide:
+        task = timer.timeChain
+        task.assign_task(args.label,args.category)
+        nt.updateFile(task)
+
+    set_title("Terminal")
