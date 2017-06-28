@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 REPLANNING
 
 The idea is to have the objects even more separated
@@ -198,4 +199,8 @@ spciefied time spam.
   consider on the plot. 
   The default ticker system would will spread the yaxis among all the days
   to consider, a margin of 2.5% of the total height shall be considered
+=======
+# Chronos
+Application to manage the time spent in different tasks.
+>>>>>>> 313051907b37f757f63ff8887fa0c215a46d2332
 
