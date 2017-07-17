@@ -38,11 +38,11 @@ if __name__ == '__main__':
     ntPath = args.notebook
     ntPath = os.path.expandvars(ntPath)
     if not os.path.exists(ntPath):
-        completePath = os.path.join( *ntPath.split(os.path.sep)[:-1] )  
+        completePath = os.path.join( *ntPath.split(os.path.sep)[:-1] )
         os.makedirs(completePath, exist_ok=True )
     nt = TimeNotebook(ntPath)
     nt.readFile()
-    
+
     if args.resume:
         show_resume(nt, args.resume)
         sys.exit(1)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     else:
         timer = Timer()
         header = '{0: <35}{1: <20}'.format('Task:','Elapsed time:')
-    
+
     line = TimeLine(refreshTime=0.5)
     print(header)
     recordTime = True
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         try:
             time = timer.check(limit_zero=False)
             msg = '{0: <35}{1: <20}'.format(args.label,time)
-            line.updateLabel(msg) 
+            line.updateLabel(msg)
 
             if '-' in time:
                 alarm.start()
@@ -82,7 +82,7 @@ if __name__ == '__main__':
             strnow = datetime.strftime(datetime.now(),'%d/%m/%Y - %H:%M:%S')
             print('\n\n{0} - Time recording interrupted.'.format(strnow))
             cmd = input('What do you want to do?\n>').lower()
-            
+
             while True:
                 if cmd in ('s','silence'):
                     alarm.disable()
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                 else:
                     print('"{0}" is an invalid command'.format(cmd))
                     printHelp()
-                
+
                 cmd = input(">")
     # Record the data
     if not args.hide:
